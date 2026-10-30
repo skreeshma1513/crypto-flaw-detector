@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Results #{{ scan.id }} - CryptoGuard AI{% endblock %}
+{% block content %}
+<h1>Security Analysis Report</h1>
+<p class="muted">File: <b>{{ scan.filename }}</b> &middot; {{ scan.scan_date }} &middot; Scan #{{ scan.id }}</p>
+<section class="grid two">
+  <div class="card center">
+    <div class="gauge {{ scan.risk_level }}" style="--p: {{ scan.risk_score }}"><div><b>{{ scan.risk_score }}</b><small>/100</small></div></div>
+    <h3>Overall Risk Score</h3>
+    <span class="badge big {{ scan.risk_level }}">{{ scan.risk_level }}</span>
+    <p class="muted small">{{ scan.explanation }}</p>
+  </div>
+  <div class="card">
+    <h3>Summary</h3>
+    <ul class="kv">
+      <li><span>Risk Level</span><b class="badge {{ scan.risk_level }}">{{ scan.risk_level }}</b></li>
+      <li><span>AI Prediction</span><b>{{ scan.ai_prediction }}</b></li>
+      <li><span>AI Confidence</span><b>{{ '%.0f'|format(scan.ai_confidence*100) }}%</b></li>
+      <li><span>Static Analysis Result</span><b>{{ static_level if scan.finding_count else 'CLEAN' }} ({{ scan.static_score }}/100)</b></li>
+      <li><span>Combined Risk Score</span><b>{{ scan.risk_score }}/100</b></li>
+      <li><span>Total Findings</span><b>{{ scan.finding_count }}</b></li>
+    </ul>
+    <div class="chartbox small"><canvas id="resChart" data-counts='{{ counts|tojson }}'></canvas></div>
+  </div>
+</section>
+<div class="actions">
+  <a class="btn primary" href="{{ url_for('report', scan_id=scan.id) }}" target="_blank">View Report</a>
+  <a class="btn" href="{{ url_for('report', scan_id=scan.id, download='html') }}">Download HTML</a>
+  <a class="btn" href="{{ url_for('report', scan_id=scan.id, download='txt') }}">Download TXT</a>
+  <a class="btn ghost" href="{{ url_for('history') }}">Scan History</a>
+</div>
+<section class="card"><h3>Detected Issues</h3>
+  {% if findings %}
+  <div class="tablewrap"><table>
+    <tr><th>Rule ID</th><th>Severity</th><th>Issue</th><th>Line</th><th>Evidence</th><th>Why dangerous</th><th>Recommendation</th></tr>
+    {% for f in findings %}<tr>
+      <td>{{ f.rule_id }}</td><td><span class="badge {{ f.severity }}">{{ f.severity }}</span></td>
+      <td>{{ f.title }}</td><td>{{ f.line_number }}</td><td><code>{{ f.evidence }}</code></td>
+      <td>{{ f.description }}</td><td>{{ f.recommendation }}</td></tr>{% endfor %}
+  </table></div>
+  {% else %}<p class="muted">No cryptographic issues were detected.</p>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CryptoGuard AI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="{{ url_for('index') }}" id="nav-brand">
+    <span class="logo">&#9919;</span> CryptoGuard <b>AI</b>
+    <span class="version-tag">v2.4 SecEngine</span>
+  </a>
+  <nav class="nav-links">
+    <a href="{{ url_for('index') }}" id="nav-dashboard">Dashboard</a>
+    <a href="{{ url_for('upload') }}" id="nav-upload">Analyze Code</a>
+    <a href="{{ url_for('history') }}" id="nav-history">Scan History</a>
+  </nav>
+  <div class="nav-auth">
+    {% if session.get('user_id') %}
+      <div class="user-pill" title="Logged in as {{ session.get('username') }}">
+        <span class="user-avatar">&#128100;</span>
+        <span class="user-name">{{ session.get('username') }}</span>
+        <span class="user-role">{{ session.get('role', 'Analyst') }}</span>
+      </div>
+      <a href="{{ url_for('logout') }}" class="btn-sm btn-logout" id="nav-logout">&#x21aa; Logout</a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="btn-sm btn-login" id="nav-login">&#128274; Sign In</a>
+    {% endif %}
+  </div>
+</header>
+<main class="container">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+      <div class="flash-stack">
+        {% for cat, msg in msgs %}
+          <div class="alert {{ cat }}">
+            <span class="alert-icon">
+              {% if cat == 'error' %}&#9888;
+              {% elif cat == 'warning' %}&#9888;
+              {% elif cat == 'success' %}&#10003;
+              {% else %}&#9432;{% endif %}
+            </span>
+            <span>{{ msg }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">
+  <span>Defensive static analysis only &middot; uploaded code is never executed &middot; Encrypted Session Protection</span>
+</footer>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
+

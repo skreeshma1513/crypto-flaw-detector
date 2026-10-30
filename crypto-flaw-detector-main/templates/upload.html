@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Analyze Code - CryptoGuard AI{% endblock %}
+{% block content %}
+<h1>Analyze Source Code</h1>
+<p class="muted">Upload a <code>.py</code> / <code>.txt</code> file (max 1 MB) or paste code. It is parsed, never run.</p>
+<form class="card" method="post" action="{{ url_for('analyze') }}" enctype="multipart/form-data" id="uploadForm">
+  <label for="code_file">Upload file</label>
+  <input type="file" id="code_file" name="code_file" accept=".py,.txt">
+  <div class="or">OR</div>
+  <label for="code_text">Paste source code</label>
+  <textarea id="code_text" name="code_text" rows="16" spellcheck="false" placeholder="import hashlib&#10;hashlib.md5(b'data')"></textarea>
+  <button class="btn primary" type="submit">Start Security Analysis</button>
+</form>
+{% endblock %}

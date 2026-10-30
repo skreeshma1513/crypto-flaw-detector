@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Sign In - CryptoGuard AI{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <!-- Subtle Glowing Backdrop Accent -->
+  <div class="auth-glow-orb"></div>
+  <div class="auth-glow-orb secondary"></div>
+
+  <div class="auth-card" id="auth-container">
+    <!-- Header with Cyber Aesthetic -->
+    <div class="auth-header">
+      <div class="auth-icon-badge">
+        <span class="auth-icon">&#128274;</span>
+        <div class="pulse-ring"></div>
+      </div>
+      <h1 class="auth-title">CryptoGuard Access</h1>
+      <p class="auth-subtitle">AI-assisted vulnerability engine for cryptographic protocols</p>
+    </div>
+
+    <!-- Quick Demo Access Bar -->
+    <div class="demo-box">
+      <div class="demo-info">
+        <span class="demo-pill">DEMO READY</span>
+        <span class="demo-text">Quick access as <b>admin</b></span>
+      </div>
+      <button type="button" class="btn-demo" id="btn-autofill-demo" onclick="fillDemoCredentials()">
+        &#9889; Auto-fill Demo
+      </button>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="auth-tabs">
+      <button type="button" class="tab-btn {% if active_tab != 'register' %}active{% endif %}" id="tab-login-btn" onclick="switchAuthTab('login')">
+        Sign In
+      </button>
+      <button type="button" class="tab-btn {% if active_tab == 'register' %}active{% endif %}" id="tab-register-btn" onclick="switchAuthTab('register')">
+        Create Account
+      </button>
+    </div>
+
+    <!-- Sign In Panel -->
+    <div class="auth-panel {% if active_tab == 'register' %}hidden{% endif %}" id="panel-login">
+      <form method="post" action="{{ url_for('login') }}" class="auth-form" id="login-form">
+        <input type="hidden" name="next" value="{{ next_url or '' }}">
+        
+        <div class="form-group">
+          <label for="login-username">Workstation Username</label>
+          <div class="input-with-icon">
+            <span class="input-icon">&#128100;</span>
+            <input type="text" id="login-username" name="username" class="form-control" placeholder="e.g. admin" required autocomplete="username" autofocus>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label for="login-password">Access Passphrase</label>
+            <span class="text-hint">Default: admin123</span>
+          </div>
+          <div class="input-with-icon">
+            <span class="input-icon">&#128273;</span>
+            <input type="password" id="login-password" name="password" class="form-control" placeholder="Enter passphrase" required autocomplete="current-password">
+            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('login-password', this)" title="Show/Hide Password">
+              &#128065;
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row remember-row">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember" id="remember-me" checked>
+            <span>Keep session active</span>
+          </label>
+          <span class="badge-role">Local Encrypted</span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-sign-in">
+          <span>Authenticate &amp; Launch Console</span>
+          <span class="btn-arrow">&#10148;</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Register Panel -->
+    <div class="auth-panel {% if active_tab != 'register' %}hidden{% endif %}" id="panel-register">
+      <form method="post" action="{{ url_for('register') }}" class="auth-form" id="register-form">
+        <input type="hidden" name="next" value="{{ next_url or '' }}">
+
+        <div class="form-group">
+          <label for="reg-username">Choose Username</label>
+          <div class="input-with-icon">
+            <span class="input-icon">&#128100;</span>
+            <input type="text" id="reg-username" name="username" class="form-control" placeholder="alphanumeric, min 3 chars" required minlength="3" autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email">Work Email (Optional)</label>
+          <div class="input-with-icon">
+            <span class="input-icon">&#9993;</span>
+            <input type="email" id="reg-email" name="email" class="form-control" placeholder="analyst@domain.com" autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-role">Auditor Role / Classification</label>
+          <div class="input-with-icon">
+            <span class="input-icon">&#9878;</span>
+            <select id="reg-role" name="role" class="form-control select-control">
+              <option value="Security Analyst">Security Analyst</option>
+              <option value="Cryptographic Engineer">Cryptographic Engineer</option>
+              <option value="Protocol Auditor">Protocol Auditor</option>
+              <option value="Researcher">Academic Researcher</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password">Security Passphrase</label>
+          <div class="input-with-icon">
+            <span class="input-icon">&#128273;</span>
+            <input type="password" id="reg-password" name="password" class="form-control" placeholder="min 4 characters" required minlength="4" autocomplete="new-password">
+            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('reg-password', this)" title="Show/Hide Password">
+              &#128065;
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-confirm-password">Confirm Passphrase</label>
+          <div class="input-with-icon">
+            <span class="input-icon">&#10003;</span>
+            <input type="password" id="reg-confirm-password" name="confirm_password" class="form-control" placeholder="Repeat passphrase" required minlength="4" autocomplete="new-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-create-account">
+          <span>Create Analyst Account</span>
+          <span class="btn-arrow">&#10148;</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Security Trust Bar -->
+    <div class="auth-security-footer">
+      <div class="security-chip">
+        <span class="chip-dot"></span> Scrypt KDF 256
+      </div>
+      <div class="security-chip">
+        <span class="chip-dot"></span> AST Sandboxing
+      </div>
+      <div class="security-chip">
+        <span class="chip-dot"></span> Zero Code Execution
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchAuthTab(target) {
+  const loginBtn = document.getElementById('tab-login-btn');
+  const regBtn = document.getElementById('tab-register-btn');
+  const loginPanel = document.getElementById('panel-login');
+  const regPanel = document.getElementById('panel-register');
+
+  if (target === 'register') {
+    loginBtn.classList.remove('active');
+    regBtn.classList.add('active');
+    loginPanel.classList.add('hidden');
+    regPanel.classList.remove('hidden');
+    const regUserInput = document.getElementById('reg-username');
+    if (regUserInput) regUserInput.focus();
+  } else {
+    regBtn.classList.remove('active');
+    loginBtn.classList.add('active');
+    regPanel.classList.add('hidden');
+    loginPanel.classList.remove('hidden');
+    const loginUserInput = document.getElementById('login-username');
+    if (loginUserInput) loginUserInput.focus();
+  }
+}
+
+function fillDemoCredentials() {
+  switchAuthTab('login');
+  const u = document.getElementById('login-username');
+  const p = document.getElementById('login-password');
+  u.value = 'admin';
+  p.value = 'admin123';
+  
+  // Flash animation effect to indicate autofill
+  u.classList.add('highlight-flash');
+  p.classList.add('highlight-flash');
+  setTimeout(() => {
+    u.classList.remove('highlight-flash');
+    p.classList.remove('highlight-flash');
+  }, 1000);
+}
+
+function togglePasswordVisibility(fieldId, btn) {
+  const field = document.getElementById(fieldId);
+  if (field.type === 'password') {
+    field.type = 'text';
+    btn.innerHTML = '&#128584;';
+  } else {
+    field.type = 'password';
+    btn.innerHTML = '&#128065;';
+  }
+}
+</script>
+{% endblock %}

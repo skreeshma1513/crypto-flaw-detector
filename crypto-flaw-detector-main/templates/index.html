@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - CryptoGuard AI{% endblock %}
+{% block content %}
+<section class="hero">
+  <div><h1>Cryptographic Flaw Detection</h1>
+  <p>AI-assisted static analysis of cryptographic protocol implementations.</p></div>
+  <div class="actions">
+    <a class="btn primary" href="{{ url_for('upload') }}">Analyze Code</a>
+    <form method="post" action="{{ url_for('analyze') }}"><input type="hidden" name="sample" value="1">
+      <button class="btn" type="submit">Scan Sample</button></form>
+    <a class="btn ghost" href="{{ url_for('history') }}">View Scan History</a>
+  </div>
+</section>
+<section class="grid cards">
+  <div class="card stat"><span>Total Scans</span><b>{{ stats.total_scans }}</b></div>
+  <div class="card stat crit"><span>High / Critical Findings</span><b>{{ stats.high_critical }}</b></div>
+  <div class="card stat med"><span>Medium Findings</span><b>{{ stats.medium }}</b></div>
+  <div class="card stat low"><span>Low Findings</span><b>{{ stats.low }}</b></div>
+  <div class="card stat"><span>Average Risk Score</span><b>{{ stats.avg_risk }}</b></div>
+</section>
+<section class="grid two">
+  <div class="card"><h3>Findings by Severity</h3>
+    <div class="chartbox"><canvas id="sevChart"></canvas></div></div>
+  <div class="card"><h3>Risk Score Trend (last 10 scans)</h3>
+    <div class="chartbox"><canvas id="trendChart"></canvas></div></div>
+</section>
+<section class="card"><h3>Recent Scans</h3>
+  {% if recent %}
+  <div class="tablewrap"><table>
+    <tr><th>ID</th><th>File</th><th>Date</th><th>Score</th><th>Level</th><th>AI</th><th></th></tr>
+    {% for s in recent %}<tr>
+      <td>#{{ s.id }}</td><td>{{ s.filename }}</td><td>{{ s.scan_date }}</td><td>{{ s.risk_score }}</td>
+      <td><span class="badge {{ s.risk_level }}">{{ s.risk_level }}</span></td>
+      <td>{{ s.ai_prediction }} ({{ '%.0f'|format(s.ai_confidence*100) }}%)</td>
+      <td><a href="{{ url_for('results', scan_id=s.id) }}">View</a></td></tr>{% endfor %}
+  </table></div>
+  {% else %}<p class="muted">No scans yet. Click <b>Scan Sample</b> to run your first analysis.</p>{% endif %}
+</section>
+{% endblock %}
